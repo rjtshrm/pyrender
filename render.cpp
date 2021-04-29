@@ -256,6 +256,11 @@ int renderOFF(Vertices* vertices, Faces* faces, DepthBuffer* depthBuffer, Camera
     glm::mat4 camera = glm::mat4(1.0f);
     glm::mat4 projection = glm::mat4(1.0f);
 
+    // H-Z to OpenGL camera coordinates
+    projection[0][0] = 1;   // x scale
+    projection[1][1] = -1;  // y scale
+    projection[2][2] = -1;  // z scale
+
     setCameraMatrix(camera_init->focal_length, (float) camera_init->width, (float) camera_init->height,
                     camera_init->cx, camera_init->cy, camera_init->near, camera_init->far, &camera[0][0]);
 
@@ -274,13 +279,13 @@ int renderOFF(Vertices* vertices, Faces* faces, DepthBuffer* depthBuffer, Camera
 #ifdef ON_SCREEN
     glUseProgram(shaderProgram);
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "camera"), 1, GL_FALSE, glm::value_ptr(camera));
-    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
     glUseProgram(0);
 #endif
 
     glUseProgram(shaderProgramFBO);
     glUniformMatrix4fv(glGetUniformLocation(shaderProgramFBO, "camera"), 1, GL_FALSE, glm::value_ptr(camera));
-    glUniformMatrix4fv(glGetUniformLocation(shaderProgramFBO, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgramFBO, "projection"), 1, GL_FALSE, &projection[0][0]);
     glUseProgram(0);
 
 
@@ -305,12 +310,7 @@ int renderOFF(Vertices* vertices, Faces* faces, DepthBuffer* depthBuffer, Camera
 
     for (int i = 0; i < camera_init->height; i++) {
         for (int j = 0; j < camera_init->width; j++) {
-            if (depth2D[(i * camera_init->width) + j] < 1) {
-                depthBuffer->buffer[depth_out_idx++] =  linearizeDepth(depth2D[(i * camera_init->width) + j], camera_init->near, camera_init->far);
-            }
-            else {
-                depthBuffer->buffer[depth_out_idx++] =  0;
-            }
+            depthBuffer->buffer[depth_out_idx++] =  linearizeDepth(depth2D[(i * camera_init->width) + j], camera_init->near, camera_init->far);
         }
     }
     delete[] depth2D;
