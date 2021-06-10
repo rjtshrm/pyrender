@@ -1,6 +1,5 @@
 import mpl_toolkits.mplot3d
 import matplotlib.pyplot as pp
-from pytorch3d.renderer.cameras import look_at_rotation, look_at_view_transform
 
 from numpy import pi, cos, sin, arccos, arange
 import numpy as np

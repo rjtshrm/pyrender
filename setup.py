@@ -6,8 +6,8 @@ import numpy
 
 extensions = [
     Extension("pyrender",
-              sources=["pyrender.pyx", "render.cpp", "/home/rajat/Desktop/pyrender/glad/src/glad.c"],
-              include_dirs=[numpy.get_include(), "/home/rajat/Desktop/pyrender/glad/include/"],
+              sources=["pyrender.pyx", "render.cpp", "glad/src/glad.c"],
+              include_dirs=[numpy.get_include(), "glad/include/"],
               libraries=["glfw"],
               #extra_compile_args=["-O3", '-std=c++11', '-DON_SCREEN'],
               extra_compile_args=["-O3", '-std=c++11'],
